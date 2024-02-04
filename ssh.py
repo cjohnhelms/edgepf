@@ -1,20 +1,16 @@
-from sshtunnel import SSHTunnelForwarder
-from fabric import Connection
+import subprocess
 
 def get_vms(host):
-    vms = Connection(host).run('sudo virsh list --name', hide=True)
-    return vms.stdout.strip()
+    result = subprocess.run(['ssh', '-A', '-J', 'jump2,login.cgs', host, 'sudo virsh list --name'], capture_output=True, text=True)
+    return result.stdout.strip().split('\n')
 
 def get_vip(host):
-    vip = Connection(host).run("ip a show br0 | grep secondary | awk '{ print $2 }' | awk -F '/' '{ print $1 }'")
-    return vip.stdout.strip()
+    result = subprocess.run(['ssh', '-A', '-J', 'jump2,login.cgs', host, "ip a show br0 | grep secondary | awk '{ print $2 }' | awk -F '/' '{ print $1 }'"], capture_output=True, text=True)
+    return result.stdout.strip()
 
-def start_tunnel(host, remote_port, local_port):
-    server = SSHTunnelForwarder(
-        host,
-        remote_bind_address=('', remote_port),
-        local_bind_address=('0.0.0.0', local_port)
-    )
-    server.start()
-    while True:
-        pass
+def get_remote_port(host, vm):
+    result = subprocess.run(['ssh', '-A', '-J', 'jump2,login.cgs', host, f'sudo virsh dumpxml {vm} | grep spice | grep port | cut -d "\'" -f4'], capture_output=True, text=True)
+    return result.stdout.strip()
+
+def start_tunnel(host, vip, remote_port, local_port):
+    subprocess.run(['ssh', '-AL', f'{local_port}:{vip}:{remote_port}', '-J', 'jump2,login.cgs', host])

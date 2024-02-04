@@ -12,16 +12,6 @@ frame.grid()
 # def textvariables
 node = StringVar()
 local_port = StringVar()
-ports = {
-        "RLSI": 443,
-        "POS1": 5901,
-        "POS2": 5904,
-        "POS3": 5905,
-        "POS4": 5906,
-        "BOS": 5902,
-        "Fuel": 5903,
-        "OMS1": 5909
-    }
 
 # functions
 def fetch():
@@ -33,13 +23,14 @@ def fetch():
         ttk.Button(frame, text=endpoints[i], command=lambda f=endpoints[i]: build(f)).grid(column=0, row=i+4)
 
 def build(selected):
-    port = ports[selected]
     vip = ssh.get_vip(node.get())
-    ssh.start_tunnel(node.get(), vip, port, local_port.get())
     if selected == 'RLSI':
         viewer.open_browser(local_port.get())
+        ssh.start_tunnel(node.get(), vip, '443', local_port.get())
     else:
+        remote_port = ssh.get_remote_port(node.get(), selected)
         viewer.open_remote_viewer(local_port.get())
+        ssh.start_tunnel(node.get(), vip, remote_port, local_port.get())
 
 # define main window
 ttk.Label(frame, text="Enter Hostname: ", font=("Arial", 12)).grid(column=0, row=0)
