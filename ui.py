@@ -15,7 +15,7 @@ local_port = StringVar()
 
 # functions
 def fetch():
-    endpoints = ssh.get_vms(node.get()).split('\n')
+    endpoints = ssh.get_vms(node.get())
     endpoints = ['RLSI'] + endpoints
     ttk.Label(frame, text="Select Endpoint: ", font=("Arial", 12)).grid(column=0, row=3)
     for i in range(len(endpoints)):
