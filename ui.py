@@ -14,13 +14,25 @@ node = StringVar()
 local_port = StringVar()
 
 # functions
+def error_window(err):
+    err_window = Toplevel()
+    err_window.title('Hostname Error')
+    err_frame = ttk.Frame(err_window, padding=10)
+    err_frame.pack()
+    ttk.Label(err_frame, text=err).pack()
+
 def fetch():
-    endpoints = ssh.get_vms(node.get())
-    endpoints = ['RLSI'] + endpoints
-    ttk.Label(frame, text="Select Endpoint: ", font=("Arial", 12)).grid(column=0, row=3)
-    for i in range(len(endpoints)):
-        print(endpoints[i])
-        ttk.Button(frame, text=endpoints[i], command=lambda f=endpoints[i]: build(f)).grid(column=0, row=i+4)
+    result = ssh.get_vms(node.get())
+    print(result.stderr)
+    if 'Could not resolve hostname' in result.stderr:
+        error_window('Hostname resolution error. Please verify hostname and check VPN status.')
+    else:
+        endpoints = result.stdout.strip().split('\n')
+        endpoints = ['RLSI'] + endpoints
+        ttk.Label(frame, text="Select Endpoint: ", font=("Arial", 12)).grid(column=0, row=3)
+        for i in range(len(endpoints)):
+            print(endpoints[i])
+            ttk.Button(frame, text=endpoints[i], command=lambda f=endpoints[i]: build(f)).grid(column=0, row=i+4)
 
 def build(selected):
     vip = ssh.get_vip(node.get())
