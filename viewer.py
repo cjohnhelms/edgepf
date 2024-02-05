@@ -7,4 +7,4 @@ def open_browser(local_port):
 
 def open_remote_viewer(local_port):
     url = 'http://localhost:' + str(local_port)
-    subprocess.Popen(['remote_viewer', url])
+    subprocess.Popen(['remote-viewer', url])
