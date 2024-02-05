@@ -7,4 +7,4 @@ def open_browser(local_port):
 
 def open_remote_viewer(local_port):
     url = 'spice://localhost:' + str(local_port)
-    subprocess.Popen(['remote-viewer', url])
+    subprocess.Popen(['remote-viewer', '--auto-resize=never', url])
