@@ -1,5 +1,10 @@
 import subprocess
 
+def execute(host, cmd=''):
+    cust = host[:3]
+    result = subprocess.run(['ssh', '-q', '-A', '-J', f'jump2,login.{cust}', host, cmd], capture_output=True, text=True)
+    return result
+
 def get_vms(host):
     cust = host[:3]
     result = subprocess.run(['ssh', '-q', '-A', '-J', f'jump2,login.{cust}', host, 'sudo virsh list --name'], capture_output=True, text=True)
