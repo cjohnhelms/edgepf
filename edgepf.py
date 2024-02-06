@@ -43,7 +43,7 @@ def build(selected, vip):
         viewer.open_browser(local_port.get())
         ssh.start_tunnel(node.get(), vip, '443', local_port.get())
     else:
-        remote_port = ssh.execute(node.get(), selected, f'sudo virsh dumpxml {selected} | grep spice | grep port | cut -d "\'" -f4').stdout.strip()
+        remote_port = ssh.execute(node.get(), f'sudo virsh dumpxml {selected} | grep spice | grep port | cut -d "\'" -f4').stdout.strip()
         ssh.start_tunnel(node.get(), vip, remote_port, local_port.get())
         viewer.open_remote_viewer(local_port.get())
 
