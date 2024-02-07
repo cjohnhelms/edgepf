@@ -2,3 +2,8 @@ bin
 lib
 include
 pyvenv.cfg
+build
+dist
+.DS_store
+__pycache__
+__pycache__/*
